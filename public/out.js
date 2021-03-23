@@ -1,11 +1,7 @@
 const ctx = document.getElementById("canvas").getContext("2d");
 const drawable_pool = [];
 let decay = 0.4;
-const random_air_resitance = (obj)=>{
-    obj.velocity.x += obj.y / 200000 * (Math.random() - 0.5) * 30;
-};
 function Collision(obj1, ground = true) {
-    random_air_resitance(obj1);
     if (ground && obj1.y >= 500) {
         obj1.velocity.y = obj1.velocity.y * -1;
         obj1.y = 500;
@@ -57,21 +53,20 @@ class Rectangle {
         this.ctx.fillRect(this.x, this.y, this.w, this.h);
     }
 }
-const rect1 = new Rectangle(ctx, 200, 200, 10, 10, new FillStyle(0, 0, 255), 10, async (r1)=>{
+const rect1 = new Rectangle(ctx, 400, 100, 10, 10, new FillStyle(0, 0, 255), 10, async (r1)=>{
     Collision(r1);
-    r1.fs.r = r1.y / 500 * 255 - decay;
-    r1.fs.b = (500 - r1.y) / 500 * 255 - decay;
-    r1.fs.g = 1 / (r1.fs.b + r1.fs.r) * 255 - decay;
+    r1.ctx.fillStyle = "#fff";
+    r1.ctx.fillRect(r1.x - 2, r1.y - 2, r1.w + 2, r1.h + 2);
     r1.velocity.x += r1.accl.x;
     r1.velocity.y += r1.accl.y;
     r1.x += r1.velocity.x;
     r1.y += r1.velocity.y;
-    const gx = r1.x - star.x, gy = r1.y - star.y;
+    const gx = -r1.x + star.x, gy = -r1.y + star.y;
     const d = Math.sqrt(gx * gx + gy * gy);
-    const gf = this.mass * star.mass * 2 / (d * d);
-    r1.accl = new Vector(gf / gx, gf / gy);
+    const gf = r1.mass * star.mass * 0.01 / (d * d);
+    r1.accl = new Vector(gf * gx / 100, gf * gy / 100);
 });
-const star = new Rectangle(ctx, 250, 250, 10, 10, new FillStyle(0, 0, 255), 1000, async (r1)=>{
+const star = new Rectangle(ctx, 200, 200, 100, 100, new FillStyle(0, 0, 255), 1000, async (r1)=>{
 });
 async function main() {
     for (const obj of drawable_pool){
